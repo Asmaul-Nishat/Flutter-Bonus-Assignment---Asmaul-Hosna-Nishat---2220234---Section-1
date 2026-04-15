@@ -2,8 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ui_class/providers/task_management_provider.dart';
 import 'package:flutter_ui_class/screens/UI_page.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    await FirebaseFirestore.instance.collection('connection_test').add({
+      'message': 'Firebase is fully connected',
+      'timestamp': DateTime.now().toString(),
+    });
+
+    debugPrint("Firestore write SUCCESS");
+  } catch (e) {
+    debugPrint("Firestore ERROR: $e");
+  }
+
   runApp(const FlutterUIApp());
 }
 
@@ -30,7 +50,7 @@ class FlutterUIApp extends StatelessWidget {
 
 
 
-class HomePage extends StatefulWidget { 
+class HomePage extends StatefulWidget {
   final String title;
 
   const HomePage({super.key, required this.title});
@@ -136,18 +156,9 @@ class _HomePageState extends State<HomePage> {
 
                   IconButton(
                     onPressed: (){
-                      // home -> page 2 -> page 3 -> page 4 -> page 5
-
-                      // |Page 5 |
-                      // |Page 4 |
-                      // |Page 3 |
-                      // |Page 2 |  
-                      // |Home   |
-
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => UiPage(),)
                       );
-
 
                     },
                     color: Colors.purpleAccent,
@@ -162,7 +173,6 @@ class _HomePageState extends State<HomePage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        // onPressed: _incrementCounter,
         onPressed: () {
           _incrementCounter();
         },
@@ -172,3 +182,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
